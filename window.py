@@ -1,6 +1,5 @@
 import tkinter as tk
 
-
 class DragWindow(tk.Tk):
     root_x, root_y, abs_x, abs_y = 0, 0, 0, 0
     width, height = None, None
@@ -37,3 +36,16 @@ class DragWindow(tk.Tk):
     def _on_tap(self, event):
         self.root_x, self.root_y = event.x_root, event.y_root
         self.abs_x, self.abs_y = self.winfo_x(), self.winfo_y()
+
+def main():
+
+    root = DragWindow(alpha=1, bg="grey")
+
+    root.set_window_size(300, 350)
+    root.set_display_postion(100, 100)
+
+    tk.Button(root, text="Exit", command=root.quit, bg="white", bd=0).pack(side=tk.TOP)
+    tk.Canvas(root, height=30, bg="grey", bd=0, relief="groove").pack(side=tk.BOTTOM)
+    tk.Entry(root, width=300).pack(side=tk.BOTTOM)
+
+    root.mainloop()
