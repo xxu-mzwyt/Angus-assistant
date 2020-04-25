@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*- #
+
+# window.py
+
 import tkinter as tk
 
 class DragWindow(tk.Tk):
@@ -37,9 +41,9 @@ class DragWindow(tk.Tk):
         self.root_x, self.root_y = event.x_root, event.y_root
         self.abs_x, self.abs_y = self.winfo_x(), self.winfo_y()
 
-def main():
+def create_window():
 
-    root = DragWindow(alpha=1, bg="grey")
+    root = DragWindow(alpha=0.7, bg="grey")
 
     root.set_window_size(300, 350)
     root.set_display_postion(100, 100)
@@ -49,3 +53,6 @@ def main():
     tk.Entry(root, width=300).pack(side=tk.BOTTOM)
 
     root.mainloop()
+
+
+create_window()

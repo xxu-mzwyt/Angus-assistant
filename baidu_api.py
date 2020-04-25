@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*- #
+
+# baidu_api.py
+
 from sys import byteorder
 from array import array
 from struct import pack
@@ -14,7 +17,7 @@ import base64
 
 
 class BaiduRest:
-    def __init__(self, cu_id, api_key, api_secert):
+    def __init__(self, cu_id="18158180", api_key="HXeOuF3fzhWVNwesAn5kD2Ep", api_secert="P3GkrQTecuGN1dg7yLLjgZeqQF3McBem"):
         self.token_url = "https://openapi.baidu.com/oauth/2.0/token?grant_type=client_credentials&client_id=%s&client_secret=%s"
         self.getvoice_url = "http://tsn.baidu.com/text2audio?tex=%s&lan=zh&cuid=%s&ctp=1&tok=%s"
         self.upvoice_url = 'http://vop.baidu.com/server_api'
@@ -73,11 +76,11 @@ class BaiduRest:
         playsound.playsound(audio_file)
 
     def is_silent(self, snd_data):
-        "Returns 'True' if below the 'silent' threshold"
+        # Returns 'True' if below the 'silent' threshold
         return max(snd_data) < self.THRESHOLD
 
     def normalize(self, snd_data):
-        "Average the volume out"
+        # Average the volume out
         MAXIMUM = 16384
         times = float(MAXIMUM) / max(abs(i) for i in snd_data)
 
