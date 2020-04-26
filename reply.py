@@ -30,6 +30,8 @@ NextAsk_List  = ["好的，还有其他事情吗？",
 
 def get_answer(ask=""):
     
+    bdr = baidu_api.BaiduRest()
+    
     if ask == "":
         return "我没有听清你说了什么。"
 
@@ -37,6 +39,9 @@ def get_answer(ask=""):
 
     if "你好" in ask or "早上好" in ask or "中午好" in ask or "晚上好" in ask or "Hello" in ask or "嗨" in ask:
         return random.choice(Greeting_List)
+
+    if "记录" in ask:
+
 
     if answered:
         return random.choice(NextAsk_List)

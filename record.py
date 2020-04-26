@@ -21,5 +21,6 @@ def talk():
     bdr.getVoice(ans, ".\\recordings\\output.mp3")
     bdr.speak(".\\recordings\\output.mp3")
 
+    return ans
 
 talk()

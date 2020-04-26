@@ -43,7 +43,7 @@ class DragWindow(tk.Tk):
 
 def create_window():
 
-    root = DragWindow(alpha=0.7, bg="grey")
+    root = DragWindow(alpha=0.9, bg="grey")
 
     root.set_window_size(300, 350)
     root.set_display_postion(100, 100)
@@ -55,4 +55,20 @@ def create_window():
     root.mainloop()
 
 
-create_window()
+def create_note(note_text=""):
+
+    root = DragWindow(alpha=0.7, bg="grey")
+
+    root.set_window_size(200, 200)
+    root.set_display_postion(100, 100)
+
+    ExitBtn = tk.Button(root, text="Delete", command=root.quit, width=200, bg="grey", bd=0).pack(side=tk.BOTTOM)
+    
+    TextBox = tk.Text(root)
+    TextBox.place(width=200, height=175)
+    TextBox.insert('end', note_text)
+
+    root.mainloop()
+
+# create_window()
+create_note("Test Note")
