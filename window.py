@@ -40,35 +40,3 @@ class DragWindow(tk.Tk):
     def _on_tap(self, event):
         self.root_x, self.root_y = event.x_root, event.y_root
         self.abs_x, self.abs_y = self.winfo_x(), self.winfo_y()
-
-def create_window():
-
-    root = DragWindow(alpha=0.9, bg="grey")
-
-    root.set_window_size(300, 350)
-    root.set_display_postion(100, 100)
-
-    tk.Button(root, text="Exit", command=root.quit, bg="white", bd=0).pack(side=tk.TOP)
-    tk.Canvas(root, height=30, bg="grey", bd=0, relief="groove").pack(side=tk.BOTTOM)
-    tk.Entry(root, width=300).pack(side=tk.BOTTOM)
-
-    root.mainloop()
-
-
-def create_note(note_text=""):
-
-    root = DragWindow(alpha=0.7, bg="grey")
-
-    root.set_window_size(200, 200)
-    root.set_display_postion(100, 100)
-
-    ExitBtn = tk.Button(root, text="Delete", command=root.quit, width=200, bg="grey", bd=0).pack(side=tk.BOTTOM)
-    
-    TextBox = tk.Text(root)
-    TextBox.place(width=200, height=175)
-    TextBox.insert('end', note_text)
-
-    root.mainloop()
-
-# create_window()
-create_note("Test Note")
