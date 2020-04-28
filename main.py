@@ -128,6 +128,8 @@ def record():
 
 def reply():
 
+    global first
+    
     if first:
         OutText.delete(0, 'end')
         first = False
@@ -236,7 +238,7 @@ IptEntry.focus_force()
 
 OutText = tk.Text(root, width=30, height=20, font=ft_small, bd=0, bg="grey", fg="white", state="disabled", cursor='arrow')
 OutText.place(x=20, y=20)
-OutText.insert('end', "这是一段介绍")
+# OutText.insert('end', "这是一段介绍")
 
 ExitImage = tk.PhotoImage(file=".\\assest\\exit.png")
 ExitBtn = tk.Button(root, image=ExitImage, command=root.quit, bg="grey", bd=0, width=30, height=30)
