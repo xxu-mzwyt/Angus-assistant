@@ -8,6 +8,7 @@ import random
 import time
 import threading
 import webbrowser
+import smtplib
 
 import baidu_api
 import window
@@ -59,6 +60,16 @@ def create_note(note_text=""):
 
     TextBox.insert('end', note_text)
 
+def create_timer(time_m):
+
+    time_s = 0
+
+    timer = tk.Toplevel(root)
+    timer.geometry('320x320')
+    timer.iconbitmap(".\\assest\\timer.ico")
+    timer.resizable(0,0)
+    timer.title("计时器")
+
 def start_rec(text=''):
 
     RecBtn['state'] = 'disabled'
@@ -75,13 +86,17 @@ def record():
 
     IptEntry.delete(0, 'end')
     IptEntry.insert('end',"正在倾听...")
+    IptEntry['state'] = 'disabled'
 
     bdr.recorder(".\\audio\\input.wav")
 
+    IptEntry['state'] = 'normal'
     IptEntry.delete(0, 'end')
     IptEntry.insert('end', '完毕。')
+    IptEntry['state'] = 'disabled'
 
     ask = bdr.getText('.\\audio\\input.wav')
+    IptEntry['state'] = 'normal'
     IptEntry.delete(0, 'end')
     IptEntry.insert(0, ask)
     
@@ -89,7 +104,7 @@ def record():
 
 
 def reply():
-    
+
     def next_ask():
         answer(random.choice(NextAsk_List))
     def no_answer():
@@ -111,25 +126,49 @@ def reply():
         no_answer()
         return
 
-    if "你好" in ask or "您好" in ask or "早上好" in ask or "中午好" in ask or "晚上好" in ask or "Hello" in ask or "嗨" in ask:
-        greet_me()
-        return
-
-    if "再见" in ask or "拜拜" in ask:
-        say_goodbye()
-        exit()
-        return
-
+    
     if "搜索" in ask:
         search(ask[ask.find("搜索")+2:])
         next_ask()
         return
+    if "百度" in ask:
+        search(ask[ask.find("百度")+2:])
+        next_ask()
+        return
+
+    if "邮件" in ask:
+        text = type_in()
+
+        server = smtplib.SMTP('smtp.163.com', 25)
+        server.ehlo()
+        server.starttls()
+        server.login("Your_Username", 'Your_Password')
+        server.sendmail('Your_Username', "Recipient_Username", content)
+        server.close()
+        speak('Email sent!')
 
     if "记录" in ask:
         create_note(ask[ask.find("记录")+2:])
         next_ask()
         return
 
+    if "计时" in ask:
+        answer("请确认您想要倒计时的时间（以分钟计）")
+        type_time()
+        return
+
+    if "你好吗" in ask or "你怎么样" in ask:
+        answer("我今天很好！")
+        return
+
+    if "你好" in ask or "您好" in ask or "早上好" in ask or "中午好" in ask or "晚上好" in ask or "Hello" in ask or "嗨" in ask:
+        greet_me()
+        return
+
+    if "再见" in ask or "拜拜" in ask:
+        say_goodbye()
+        root.quit()
+        return        
 
     no_answer()
 
@@ -149,15 +188,24 @@ def answer(ans):
     RecBtn['state'] = 'normal'
     IptEntry.focus_force()
 
+def type_time():
+
+    RecBtn['state'] = 'disabled'
+    IptEntry.bind("<Return>", send_time)
+
+def send_time(u=""):
+
+    create_timer(int(IptEntry.get()))
+    IptEntry.delete(0, 'end')
+    IptEntry.bind("<Return>", start_rec)
+
+    RecBtn['state'] = 'normal'
+
 def search(term):
     
     url = "https://www.baidu.com/s?wd="
     webbrowser.open(url + term)
 
-
-def exit():
-    if ms.askokcancel('Angus', '您确认要退出吗？\n正在进行的计时与笔记会关闭。'):
-        root.quit()
 
 root = window.DragWindow(alpha=0.97, bg="grey")
 
@@ -167,12 +215,13 @@ root.set_display_postion(100, 100)
 IptEntry = tk.Entry(root, width=27, font=ft, bd=1)
 IptEntry.place(x=50,y=494)
 IptEntry.bind("<Return>", start_rec)
+IptEntry.focus_force()
 
 OutText = tk.Text(root, width=30, height=20, font=ft_small, bd=0, bg="grey", fg="white", state="disabled", cursor='arrow')
 OutText.place(x=20, y=20)
 
 ExitImage = tk.PhotoImage(file=".\\assest\\exit.png")
-ExitBtn = tk.Button(root, image=ExitImage, command=exit, bg="grey", bd=0, width=30, height=30)
+ExitBtn = tk.Button(root, image=ExitImage, command=root.quit, bg="grey", bd=0, width=30, height=30)
 ExitBtn.place(x=360, y=10)
 
 MicImage = tk.PhotoImage(file=".\\assest\\mic.png")
