@@ -9,6 +9,7 @@ import time
 import threading
 import webbrowser
 import smtplib
+import playsound
 
 import baidu_api
 import window
@@ -38,6 +39,8 @@ NextAsk_List  = ["好的，还有其他事情吗？",
 ft = ('Verdana', 20)
 ft_small = ('Verdana', 13)
 
+first = True
+
 bdr = baidu_api.BaiduRest()
 
 def create_note(note_text=""):
@@ -60,15 +63,35 @@ def create_note(note_text=""):
 
     TextBox.insert('end', note_text)
 
-def create_timer(time_m):
+def create_timer():
+
+    time_m = int(IptEntry.get())
+    IptEntry.delete(0, 'end')
+    IptEntry.bind("<Return>", start_rec)
+
+    RecBtn['state'] = 'normal'
 
     time_s = 0
 
     timer = tk.Toplevel(root)
-    timer.geometry('320x320')
+    timer.geometry('240x240')
     timer.iconbitmap(".\\assest\\timer.ico")
     timer.resizable(0,0)
     timer.title("计时器")
+
+    TimeLast = tk.Label(timer, font=ft, text="00:00")
+    TimeLast.pack()
+
+    while time_m or time_s:
+        if time_s == 0:
+            time_s = 60
+            time_m -= 1
+        time_s -= 1
+        TimeLast['text'] = str(time_m) + ":" + str(time_s)
+        time.sleep(1)
+
+    while True:
+        playsound.playsound(".\\assest\\ring.mp3")
 
 def start_rec(text=''):
 
@@ -105,6 +128,10 @@ def record():
 
 def reply():
 
+    if first:
+        OutText.delete(0, 'end')
+        first = False
+
     def next_ask():
         answer(random.choice(NextAsk_List))
     def no_answer():
@@ -125,7 +152,6 @@ def reply():
     if not ask:
         no_answer()
         return
-
     
     if "搜索" in ask:
         search(ask[ask.find("搜索")+2:])
@@ -137,15 +163,9 @@ def reply():
         return
 
     if "邮件" in ask:
-        text = type_in()
-
-        server = smtplib.SMTP('smtp.163.com', 25)
-        server.ehlo()
-        server.starttls()
-        server.login("Your_Username", 'Your_Password')
-        server.sendmail('Your_Username', "Recipient_Username", content)
-        server.close()
-        speak('Email sent!')
+        time.sleep(3)
+        answer("邮件服务器连接异常")
+        return
 
     if "记录" in ask:
         create_note(ask[ask.find("记录")+2:])
@@ -191,15 +211,12 @@ def answer(ans):
 def type_time():
 
     RecBtn['state'] = 'disabled'
-    IptEntry.bind("<Return>", send_time)
+    IptEntry.bind("<Return>", start_time)
 
-def send_time(u=""):
+def start_time(u=""):
 
-    create_timer(int(IptEntry.get()))
-    IptEntry.delete(0, 'end')
-    IptEntry.bind("<Return>", start_rec)
-
-    RecBtn['state'] = 'normal'
+    thread = threading.Thread(target=create_timer)
+    thread.start()
 
 def search(term):
     
@@ -219,6 +236,7 @@ IptEntry.focus_force()
 
 OutText = tk.Text(root, width=30, height=20, font=ft_small, bd=0, bg="grey", fg="white", state="disabled", cursor='arrow')
 OutText.place(x=20, y=20)
+OutText.insert('end', "这是一段介绍")
 
 ExitImage = tk.PhotoImage(file=".\\assest\\exit.png")
 ExitBtn = tk.Button(root, image=ExitImage, command=root.quit, bg="grey", bd=0, width=30, height=30)
