@@ -43,11 +43,10 @@ class BaiduRest:
             urllib.parse.quote(text), self.cu_id, self.token_str)
 
         voice_data = urllib.request.urlopen(get_url).read()
-        voice_fp = open(filename, 'wb+')
-        voice_fp.write(voice_data)
-        voice_fp.close()
+        with open(filename, 'wb+') as voice_fp:
+            voice_fp.write(voice_data)
         pass
-
+        
     def getText(self, filename):
         data = {}
         data['format'] = 'wav'
@@ -71,8 +70,11 @@ class BaiduRest:
         return return_code
 
     def speak(self, audio_file):
-        import playsound 
+        import playsound, os 
+
         playsound.playsound(audio_file)
+        os.remove(audio_file)
+        pass
 
     def is_silent(self, snd_data):
         # Returns 'True' if below the 'silent' threshold

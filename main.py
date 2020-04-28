@@ -3,9 +3,12 @@
 # main.py
 
 import tkinter as tk
-import tkinter.font as tf
+import tkinter.messagebox as ms
 import random
 import time
+import threading
+import webbrowser
+
 import baidu_api
 import window
 
@@ -31,6 +34,9 @@ NextAsk_List  = ["好的，还有其他事情吗？",
                  "没问题。",
                  "OK！"]
 
+ft = ('Verdana', 20)
+ft_small = ('Verdana', 13)
+
 bdr = baidu_api.BaiduRest()
 
 def create_note(note_text=""):
@@ -42,7 +48,7 @@ def create_note(note_text=""):
     note.iconbitmap(".\\assest\\note.ico")
     note.title("便签 " + time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time())))
 
-    TextBox = tk.Text(note, font='Verdana')
+    TextBox = tk.Text(note, font=ft)
     Scroll = tk.Scrollbar(note)
     
     Scroll.pack(side=tk.RIGHT,fill=tk.Y)   
@@ -53,41 +59,131 @@ def create_note(note_text=""):
 
     TextBox.insert('end', note_text)
 
+def start_rec(text=''):
+
+    RecBtn['state'] = 'disabled'
+
+    if text:
+        thread = threading.Thread(target=reply)
+        thread.start()
+
+    else:
+        thread = threading.Thread(target=record)
+        thread.start()
+
 def record():
 
-    print('正在倾听...')
+    IptEntry.delete(0, 'end')
+    IptEntry.insert('end',"正在倾听...")
+
     bdr.recorder(".\\audio\\input.wav")
-    print('完毕。')
+
+    IptEntry.delete(0, 'end')
+    IptEntry.insert('end', '完毕。')
 
     ask = bdr.getText('.\\audio\\input.wav')
-    print('>>', ask)
+    IptEntry.delete(0, 'end')
+    IptEntry.insert(0, ask)
+    
+    reply()
 
-    ans = reply(ask)
-    print('Angus:', ans)
+
+def reply():
+    
+    def next_ask():
+        answer(random.choice(NextAsk_List))
+    def no_answer():
+        answer(random.choice(NoAnswer_List))
+    def greet_me():
+        answer(random.choice(Greeting_List))
+    def say_goodbye():
+        answer(random.choice(Leaving_List))
+
+    ask = IptEntry.get()
+
+    OutText["state"] = 'normal'
+    OutText.insert('end', '>>' + ask + '\n')
+    OutText.focus_force()
+    OutText.see('end')
+    OutText["state"] = 'disabled'
+
+    if not ask:
+        no_answer()
+        return
+
+    if "你好" in ask or "您好" in ask or "早上好" in ask or "中午好" in ask or "晚上好" in ask or "Hello" in ask or "嗨" in ask:
+        greet_me()
+        return
+
+    if "再见" in ask or "拜拜" in ask:
+        say_goodbye()
+        exit()
+        return
+
+    if "搜索" in ask:
+        search(ask[ask.find("搜索")+2:])
+        next_ask()
+        return
+
+    if "记录" in ask:
+        create_note(ask[ask.find("记录")+2:])
+        next_ask()
+        return
+
+
+    no_answer()
+
+def answer(ans):
+    
+    IptEntry.delete(0, 'end')
+    
+    OutText["state"] = 'normal'
+    OutText.insert('end', 'Angus:' + ans + '\n')
+    OutText.focus_force()
+    OutText.see('end')
+    OutText["state"] = 'disabled'
+
     bdr.getVoice(ans, ".\\audio\\output.mp3")
     bdr.speak(".\\audio\\output.mp3")
 
-def reply(ask):
+    RecBtn['state'] = 'normal'
+    IptEntry.focus_force()
+
+def search(term):
     
-    def next_ask():
-        return random.choice(Greeting_List)
-    def no_answer():
-        return random.choice(NoAnswer_List)
-
-    pass
+    url = "https://www.baidu.com/s?wd="
+    webbrowser.open(url + term)
 
 
-root = window.DragWindow(alpha=0.9, bg="grey")
+def exit():
+    if ms.askokcancel('Angus', '您确认要退出吗？\n正在进行的计时与笔记会关闭。'):
+        root.quit()
 
-root.set_window_size(300, 350)
+root = window.DragWindow(alpha=0.97, bg="grey")
+
+root.set_window_size(400, 530)
 root.set_display_postion(100, 100)
 
+IptEntry = tk.Entry(root, width=27, font=ft, bd=1)
+IptEntry.place(x=50,y=494)
+IptEntry.bind("<Return>", start_rec)
+
+OutText = tk.Text(root, width=30, height=20, font=ft_small, bd=0, bg="grey", fg="white", state="disabled", cursor='arrow')
+OutText.place(x=20, y=20)
+
 ExitImage = tk.PhotoImage(file=".\\assest\\exit.png")
-tk.Button(root, image=ExitImage, command=root.quit, bg="white", bd=0, font='Verdana', width=30, height=30).pack()
+ExitBtn = tk.Button(root, image=ExitImage, command=exit, bg="grey", bd=0, width=30, height=30)
+ExitBtn.place(x=360, y=10)
 
-tk.Button(root, text="talk", command=create_note, bg="white", bd=0, font='Verdana').pack(side=tk.BOTTOM)
+MicImage = tk.PhotoImage(file=".\\assest\\mic.png")
+RecBtn = tk.Button(root, image=MicImage, command=start_rec, bg="grey", bd=0, width=50, height=33, font=ft)
+RecBtn.place(x=0, y=495)
 
-tk.Entry(root, width=300, font='Verdana').pack(side=tk.BOTTOM)
+SepLine = tk.Label(root, bg="#515151", width=80, height=1)
+SepLine.place(x=0, y=473)
+
+Covline = tk.Label(root, bg="grey", width=80, height=1)
+Covline.place(x=0, y=471)
 
 root.mainloop()
 
