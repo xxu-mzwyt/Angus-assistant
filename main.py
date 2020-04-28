@@ -74,13 +74,16 @@ def reply(ask):
     def no_answer():
         return random.choice(NoAnswer_List)
 
+    pass
+
 
 root = window.DragWindow(alpha=0.9, bg="grey")
 
 root.set_window_size(300, 350)
 root.set_display_postion(100, 100)
 
-tk.Button(root, text="Exit", command=root.quit, bg="white", bd=0, font='Verdana').pack(side=tk.TOP)
+ExitImage = tk.PhotoImage(file=".\\assest\\exit.png")
+tk.Button(root, image=ExitImage, command=root.quit, bg="white", bd=0, font='Verdana', width=30, height=30).pack()
 
 tk.Button(root, text="talk", command=create_note, bg="white", bd=0, font='Verdana').pack(side=tk.BOTTOM)
 

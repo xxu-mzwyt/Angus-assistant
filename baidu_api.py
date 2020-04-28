@@ -63,7 +63,6 @@ class BaiduRest:
         r_data = urllib.request.urlopen(
             self.upvoice_url, data=bytes(
                 post_data, encoding="utf-8")).read()
-        # 3.处理返回数据
 
         return json.loads(r_data)['result'][0]
 
