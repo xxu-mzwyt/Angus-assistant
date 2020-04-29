@@ -128,7 +128,7 @@ def create_timer():
         TimeLast['text'] = str(time_m) + ":" + str(time_s)
         time.sleep(1)
 
-    for i in range(3):
+    for i in range(2):
         if not TimerEnd:
             playsound.playsound(".\\assest\\ring.mp3")
 
@@ -321,7 +321,7 @@ def get_news():
             rslt += (res[i + 2].replace("\\", "") + "\n")
 
     return rslt
-
+    
 
 root = window.DragWindow(alpha=0.97, bg="grey")
 
