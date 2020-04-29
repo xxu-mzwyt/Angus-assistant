@@ -90,7 +90,7 @@ def create_timer():
         TimeLast['text'] = str(time_m) + ":" + str(time_s)
         time.sleep(1)
 
-    while True:
+    for i in range(3):
         playsound.playsound(".\\assest\\ring.mp3")
 
 def start_rec(text=''):
