@@ -2,6 +2,6 @@
 
 GitHub repo: https://github.com/mzWyt/Angus-Assistant
 
-Author: mzWyt
+Author: [mzWyt](https://github.com/mzWyt)
 
 License: MPL 2.0
